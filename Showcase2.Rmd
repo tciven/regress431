@@ -22,7 +22,7 @@ slr_gd
 
 ## Multiple Regression by matrix decomposition
 
-
+I should get bonus points for implementing gram schmidt. Its probably miserably slow but cmon Dr. Bodwin this is some good linear algebra.
 ```{r}
 gramsch
 

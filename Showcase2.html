@@ -377,48 +377,71 @@ summary {
 <pre class="r"><code>slr_gd</code></pre>
 <pre><code>## function(dat, response, explanatory){
 ## 
+## 
 ##   ### Compute coefficients by gradient descent
 ##   ### Return a data frame of the same form as in the `simple_linear_regression`
 ## 
-##   x &lt;- dat %&gt;% pull({{explanatory}})
-##   y &lt;- dat %&gt;% pull({{response}})
+##   x &lt;- dat %&gt;% select({{explanatory}})
+##   y &lt;- dat %&gt;% select({{response}})
 ## 
-##   x &lt;- cbind(Intercept = 1, x)
+##   xnames &lt;- c(&quot;Intercept&quot;, names(x))
 ## 
-##   xnames &lt;- names(x)
+##   x &lt;- as.matrix(cbind(Intercept = 1, x))
 ## 
-##   lr &lt;- .0015
+##   lr &lt;- .000001
 ## 
-##   gdc = as.matrix(c(0,0))
+##   gdc = as.matrix(c(0, 0))
 ## 
 ##   n = length(y)
 ## 
 ##   error &lt;- sum((x %*% gdc - y))^2/n
 ## 
-##   for (i in 1:20000){
+##   nrep = 500000
+## 
+##   checker = nrep/100
+## 
+##   # slops = rep(0, 100)
+##   # ints = rep(0, 100)
+##   # errs = rep(0, 100)
+## 
+##   for (i in 1:nrep){
 ##     preds = x %*% gdc
 ##     differ = y - preds
 ## 
-##     DM &lt;- -2 * sum(x[,2] * differ) / n
+##     if (i %% checker == 0){
+##       print(paste(i * 100 /nrep,&quot;% Done&quot;))
+## 
+##       # store = i/checker
+##       # slops[store] = gdc[2]
+##       # ints[store] = gdc[1]
+##       # errs[store] = sum(differ^2)/n
+##       }
+## 
+##     DM &lt;- -2 * sum(x[,2] * (differ)) / n
 ##     gdc[2] &lt;- gdc[2] - lr * DM
+## 
 ## 
 ##     DB &lt;- -2 * sum(differ) / n
 ##     gdc[1] &lt;- gdc[1] - lr * DB
 ## 
-##     error &lt;- sum(differ^2)/n
 ##   }
 ## 
 ##   results &lt;- data.frame(t(gdc))
 ##   names(results) &lt;- xnames
 ## 
+##   # plot(slops, main = &quot;Slopes&quot;, xlab = &quot;Iteration in 10,000s&quot;, ylab = &quot;Slope&quot;)
+##   # plot(ints, main = &quot;Intercepts&quot;, xlab = &quot;Iteration in 10,000s&quot;, ylab = &quot;Intercept&quot;)
+##   # plot(errs, main = &quot;Error&quot;, xlab = &quot;Iteration in 10,000s&quot;, ylab = &quot;Error&quot;)
+## 
 ##   return(results)
 ## 
 ## }
-## &lt;bytecode: 0x00000000190d59c8&gt;
+## &lt;bytecode: 0x00000000190e6420&gt;
 ## &lt;environment: namespace:regress431&gt;</code></pre>
 </div>
 <div id="multiple-regression-by-matrix-decomposition" class="section level2">
 <h2>Multiple Regression by matrix decomposition</h2>
+<p>I should get bonus points for implementing gram schmidt. Its probably miserably slow but cmon Dr. Bodwin this is some good linear algebra.</p>
 <pre class="r"><code>gramsch</code></pre>
 <pre><code>## function(x){
 ## 
@@ -451,15 +474,13 @@ summary {
 ##   print(q)
 ##   return(list(q = q, r = r))
 ## }
-## &lt;bytecode: 0x00000000193225b8&gt;
+## &lt;bytecode: 0x0000000019336948&gt;
 ## &lt;environment: namespace:regress431&gt;</code></pre>
 <pre class="r"><code>proj </code></pre>
 <pre><code>## function(u, a){
-##   #print(u)
-##   #print(a)
 ##   return(as.numeric(((t(a) %*% u) / (t(u) %*% u))) %*% u)
 ## }
-## &lt;bytecode: 0x0000000018f08148&gt;
+## &lt;bytecode: 0x0000000018f18ba0&gt;
 ## &lt;environment: namespace:regress431&gt;</code></pre>
 <pre class="r"><code>mlr_qr</code></pre>
 <pre><code>## function(dat, response) {
@@ -489,7 +510,7 @@ summary {
 ##   return(results)
 ## 
 ## }
-## &lt;bytecode: 0x00000000193ea338&gt;
+## &lt;bytecode: 0x00000000194024f8&gt;
 ## &lt;environment: namespace:regress431&gt;</code></pre>
 </div>
 

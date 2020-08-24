@@ -3,14 +3,13 @@
 #' @param dat A data frame
 #' @param response The name of a response variable in the data frame (unquoted)
 #' @param explanatory The name of the explanatory variable in the data frame (unquoted)
-#' @param method The method used to compute the coefficients (NULL, "qr", "gradientdescent")
 #'
 #' @return A data frame of coefficients
 #'
 #' @import dplyr
 #'
 #' @export
-simple_linear_regression <- function(dat, response, explanatory, method = NULL){
+simple_linear_regression <- function(dat, response, explanatory){
 
   x <- dat %>% pull({{explanatory}})
   y <- dat %>% pull({{response}})
@@ -24,11 +23,12 @@ simple_linear_regression <- function(dat, response, explanatory, method = NULL){
 
   ### Edit code after here
 
-  sd_x <- 1
-  sd_y <- 1
+  x <- cbind(INtercept = 1, x)
 
-  beta_0 <- 1
-  beta_1 <- 1
+  betas <- solve(t(x) %*% x) %*% t(x) %*% y
+
+  beta_0 <- betas[1]
+  beta_1 <- betas[2]
 
   ### Stop editing
 
@@ -55,19 +55,25 @@ simple_linear_regression <- function(dat, response, explanatory, method = NULL){
 #'
 #' @param dat A data frame
 #' @param response The name of a response variable in the data frame (unquoted)
-#' @param method The method used to compute the coefficients (NULL, "qr", "gradientdescent")
 #'
 #' @return A data frame of coefficients
 #'
 #' @import dplyr
 #'
 #'@export
-multiple_linear_regression <- function(dat, response, method = NULL) {
+multiple_linear_regression <- function(dat, response) {
 
+  x <- dat %>% select(-{{response}})
+  y <- dat %>% select({{response}})
 
+  x <- as.matrix(x)
+  y <- as.matrix(y)
 
-  results <- 0 ### This should be a data frame, with columns named
-                ### "Intercept" and the same variable names as dat.
+  x <- cbind(Intercept = 1, x)
+
+  betas <- solve(t(x) %*% x) %*% t(x) %*% y
+
+  results <- data.frame(t(betas))
 
   return(results)
 

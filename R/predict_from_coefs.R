@@ -16,7 +16,20 @@
 #' @export
 predict_from_coefs <- function(dat, response, coefs){
 
+  x <- dat %>% select(-response)
+  y <- dat %>% select(response)
+  x <- as.matrix(x)
 
+  x <- cbind(1, x)
 
+  coefs <- as.matrix(coefs)
+
+  pred <- x %*% t(coefs)
+
+  pred <- data.frame(cbind(y, pred))
+
+  names(pred) <- c(response, paste("Predicted", response))
+
+  return(pred)
 
 }

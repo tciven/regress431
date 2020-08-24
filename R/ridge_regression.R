@@ -18,9 +18,29 @@
 #' @export
 ridge_regression <- function(dat, response, lambda) {
 
+  x <- dat %>% select(-{{response}})
+  y <- dat %>% select({{response}})
+
+  x <- scale(as.matrix(x))
+  y <- scale(as.matrix(y))
+
+  x <- cbind(Intercept = 1, x)
+
+  results <- data.frame()
+
+  for (L in lambda){
+
+    ridge <- diag(L, nrow = ncol(x))
+
+    newbetas <- data.frame(t(solve((t(x) %*% x) + ridge) %*% t(x) %*% y))
+
+    newbetas <- cbind(newbetas, lambda = L)
+
+    results <- rbind(results, newbetas)
+
+  }
 
 
-  results <- 0
   ### This should be a data frame, with columns named
   ### "Intercept" and the same variable names as dat, and also a column
   ### called "lambda".
@@ -46,8 +66,25 @@ ridge_regression <- function(dat, response, lambda) {
 #' @import dplyr
 #'
 #' @export
-find_best_lambda <- function(train_dat, test_dat, response, lambdas) {
+find_best_lambda <- function(train_dat, test_dat, response, lambda) {
 
+  coef_mat <- ridge_regression(train_dat, response, lambda)
+
+  coef_mat <- coef_mat %>% select(-lambda)
+
+  test_y <- test_dat %>% select({{response}})
+
+  lambda_errors = data.frame()
+
+  for (i in 1:nrow(coef_mat)){
+    predvals <- predict_from_coefs(test_dat, response, coef_mat[i,])
+
+    error <- sum((predvals[,2] - test_y)^2)
+
+    newrow <- cbind(lambda = lambda[i], error = error)
+
+    lambda_errors <- rbind(lambda_errors, newrow)
+  }
 
   ### lambda_errors should be a data frame with two columns: "lambda" and "error"
   ### For each lambda, you should record the resulting Sum of Squared error

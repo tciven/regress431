@@ -14,18 +14,25 @@
 #' @import dplyr
 #'
 #' @export
+#'
+
+
 predict_from_coefs <- function(dat, response, coefs){
 
+  #pulling vars of interest
   x <- dat %>% select(-response)
   y <- dat %>% select(response)
   x <- as.matrix(x)
 
+  #adding column of ones for intercept
   x <- cbind(1, x)
 
   coefs <- as.matrix(coefs)
 
+  #simple matrix mult for prediciton
   pred <- x %*% t(coefs)
 
+  #want both original y and predicted values
   pred <- data.frame(cbind(y, pred))
 
   names(pred) <- c(response, paste("Predicted", response))

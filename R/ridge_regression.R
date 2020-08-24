@@ -16,26 +16,33 @@
 #' @import dplyr
 #'
 #' @export
+
+
 ridge_regression <- function(dat, response, lambda) {
 
+  #selecting vars
   x <- dat %>% select(-{{response}})
   y <- dat %>% select({{response}})
 
+  #vars need to be standardized
   x <- scale(as.matrix(x))
   y <- scale(as.matrix(y))
 
+  #adding vector of ones to x matrix for intercept computation
   x <- cbind(Intercept = 1, x)
 
   results <- data.frame()
 
+  #computing coefficients for each penalty term fiven
   for (L in lambda){
-
+    #rudge matrix
     ridge <- diag(L, nrow = ncol(x))
 
+    #using matrix multiplication to compute coeffs
     newbetas <- data.frame(t(solve((t(x) %*% x) + ridge) %*% t(x) %*% y))
 
+    #storing each coeffs in table with corresponding penalty term
     newbetas <- cbind(newbetas, lambda = L)
-
     results <- rbind(results, newbetas)
 
   }
@@ -48,6 +55,8 @@ ridge_regression <- function(dat, response, lambda) {
   return(results)
 
 }
+
+
 
 #' Determines the best penalty term from a set of options
 #'
@@ -66,8 +75,10 @@ ridge_regression <- function(dat, response, lambda) {
 #' @import dplyr
 #'
 #' @export
-find_best_lambda <- function(train_dat, test_dat, response, lambda) {
+#
 
+find_best_lambda <- function(train_dat, test_dat, response, lambda) {
+  #use our train dataset to generate coeffs corresponding to each error term in lambda vector
   coef_mat <- ridge_regression(train_dat, response, lambda)
 
   coef_mat <- coef_mat %>% select(-lambda)
@@ -76,20 +87,21 @@ find_best_lambda <- function(train_dat, test_dat, response, lambda) {
 
   lambda_errors = data.frame()
 
+  #use each set of coeffs to generate predicted y vector
   for (i in 1:nrow(coef_mat)){
     predvals <- predict_from_coefs(test_dat, response, coef_mat[i,])
 
+    #euclidean error
     error <- sum((predvals[,2] - test_y)^2)
 
+    #adding each lambda and error pair
     newrow <- cbind(lambda = lambda[i], error = error)
-
     lambda_errors <- rbind(lambda_errors, newrow)
   }
 
-  ### lambda_errors should be a data frame with two columns: "lambda" and "error"
-  ### For each lambda, you should record the resulting Sum of Squared error
-  ### (i.e., the predicted value minus the real value squared) from prediction
-  ### on the test dataset.
+  ### lambda_errors is a data frame with two columns: "lambda" and "error"
+  ### For each lambda, the resulting Sum of Squared error is recorded
 
   return(lambda_errors)
+
 }

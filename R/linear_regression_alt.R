@@ -65,7 +65,7 @@ slr_gd <- function(dat, response, explanatory, errplot = F){
 
     #progress counter and error store
     if (i %% checker == 0){
-      print(paste(i * 100 /nrep,"% Done"))
+      #print(paste(i * 100 /nrep,"% Done"))
 
       if (errplot){
         store = i/checker

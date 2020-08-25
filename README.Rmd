@@ -53,7 +53,7 @@ print(my_result)
 #Simple Linear Regression via Gradient Descent
 ```{r}
 my_result <- mtcars %>%
-  slr_gd(mpg, hp)
+  slr_gd(mpg, hp, errplot = T)
 
 mass_result <- lm(mpg ~ hp, data = mtcars)
 
@@ -69,6 +69,8 @@ my_result <- mtcars %>%
 
 mass_result <- lm(mpg ~ hp + cyl, data = mtcars)
 
+print(mass_result)
+print(my_result)
 ```
 
 #Multiple Linear Regression via QR Decomposition

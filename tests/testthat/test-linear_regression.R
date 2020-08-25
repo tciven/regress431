@@ -28,7 +28,6 @@ test_that("multiple linear regression is correct", {
   expect_equal(coef(mass_result)[[1]], my_result$Intercept,
                tolerance = 0.05, scale = abs(my_result$Intercept))
 
-
 })
 
 

@@ -5,6 +5,7 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
+library(regress431)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -13,3 +14,73 @@ knitr::opts_chunk$set(
 )
 ```
 
+This was the product of a series of assignments in STAT 431 Advanced Programming in R at Cal Poly SLO, focused on building different regression methods from scratch in R.
+
+##Demonstration of Regression Methods
+
+#Ridge Regression
+```{r}
+my_result <- mtcars %>%
+  dplyr::select(mpg, hp, cyl) %>%
+  ridge_regression(mpg, lambda = 0.5)
+
+mtcars2 <- mtcars %>%
+  dplyr::select(mpg, cyl, hp) %>%
+  dplyr::mutate(
+    cyl = scale(cyl),
+    hp = scale(hp)
+    )
+
+mass_result <- MASS::lm.ridge(mpg ~ hp + cyl, data = mtcars2, lambda = .5*32/31)
+
+print(mass_result)
+print(my_result)
+
+```
+
+#Selecting best lambda out of list for ridge regression
+```{r}
+lambdas <- 0:10*.1
+
+my_result <- mtcars %>%
+  dplyr::select(mpg, hp, cyl) %>%
+  ridge_regression(mpg, lambda = lambdas)
+
+print(my_result)
+
+```
+
+#Simple Linear Regression via Gradient Descent
+```{r}
+my_result <- mtcars %>%
+  slr_gd(mpg, hp)
+
+mass_result <- lm(mpg ~ hp, data = mtcars)
+
+print(mass_result)
+print(my_result)
+```
+
+#Multiple Linear Regression via Gradient Descent
+```{r}
+my_result <- mtcars %>%
+  dplyr::select(mpg, hp, cyl) %>%
+  mlr_gd(mpg)
+
+mass_result <- lm(mpg ~ hp + cyl, data = mtcars)
+
+```
+
+#Multiple Linear Regression via QR Decomposition
+```{r}
+
+my_result <- mtcars %>%
+  dplyr::select(mpg, hp, cyl) %>%
+  mlr_qr(mpg)
+
+mass_result <- lm(mpg ~ hp + cyl, data = mtcars)
+
+print(mass_result)
+print(my_result)
+
+```

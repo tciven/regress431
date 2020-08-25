@@ -17,7 +17,6 @@ library(regress431)
 
 slr_gd
 
-
 ```
 
 ## Multiple Regression by matrix decomposition
@@ -29,7 +28,6 @@ gramsch
 proj 
 
 mlr_qr
-
 
 ```
 

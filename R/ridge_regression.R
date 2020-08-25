@@ -26,10 +26,7 @@ ridge_regression <- function(dat, response, lambda) {
 
   #vars need to be standardized
   x <- scale(as.matrix(x))
-  y <- scale(as.matrix(y))
-
-  #adding vector of ones to x matrix for intercept computation
-  x <- cbind(Intercept = 1, x)
+  y <- as.matrix(y)
 
   results <- data.frame()
 

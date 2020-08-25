@@ -10,9 +10,9 @@
 #' @import dplyr
 #'
 #' @export
+
+
 slr_gd <- function(dat, response, explanatory, errplot = F){
-
-
   ### Compute coefficients by gradient descent
   ### Return a data frame of the same form as in the `simple_linear_regression`
 
@@ -185,9 +185,6 @@ proj <- function(u, a){
   return(as.numeric(((t(a) %*% u) / (t(u) %*% u))) %*% u)
 
 }
-
-
-
 
 
 #'
